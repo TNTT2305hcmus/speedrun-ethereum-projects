@@ -31,7 +31,6 @@
     "hardhat:generate": "yarn workspace @se-2/hardhat generate",
     "hardhat:hardhat-verify": "yarn workspace @se-2/hardhat hardhat-verify",
     "hardhat:lint": "yarn workspace @se-2/hardhat lint",
-    "hardhat:lint-staged": "yarn workspace @se-2/hardhat lint-staged",
     "hardhat:test": "yarn workspace @se-2/hardhat test",
     "hardhat:verify": "yarn workspace @se-2/hardhat verify",
     "lint": "yarn next:lint && yarn hardhat:lint",
@@ -40,8 +39,6 @@
     "next:format": "yarn workspace @se-2/nextjs format",
     "next:lint": "yarn workspace @se-2/nextjs lint",
     "next:serve": "yarn workspace @se-2/nextjs serve",
-    "postinstall": "husky",
-    "precommit": "lint-staged",
     "start": "yarn workspace @se-2/nextjs dev",
     "test": "yarn hardhat:test",
     "vercel": "yarn workspace @se-2/nextjs vercel",
@@ -52,10 +49,6 @@
     "hardhat-verify": "yarn hardhat:hardhat-verify"
   },
   "packageManager": "yarn@4.18.1",
-  "devDependencies": {
-    "husky": "^9.1.7",
-    "lint-staged": "^16.4.0"
-  },
   "resolutions": {
     "@coinbase/cdp-sdk": "1.52.0"
   },
