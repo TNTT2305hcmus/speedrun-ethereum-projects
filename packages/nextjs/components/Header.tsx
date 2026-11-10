@@ -8,6 +8,8 @@ import { hardhat } from "viem/chains";
 import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick, useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { PhotoIcon, ArrowPathIcon, ArrowUpTrayIcon, ArrowDownTrayIcon} from "@heroicons/react/24/outline";
+
 
 type HeaderMenuLink = {
   label: string;
@@ -17,14 +19,34 @@ type HeaderMenuLink = {
 
 export const menuLinks: HeaderMenuLink[] = [
   {
-    label: "Home",
-    href: "/",
+    label: 'Home',
+    href: '/'
   },
   {
-    label: "Debug Contracts",
-    href: "/debug",
-    icon: <BugAntIcon className="h-4 w-4" />,
+    label: 'My NFTs',
+    href: '/myNFTs',
+    icon: <PhotoIcon className="h-4 w-4" />
   },
+  {
+    label: 'Transfers',
+    href: '/transfers',
+    icon: <ArrowPathIcon className="h-4 w-4" />
+  },
+  {
+    label: 'IPFS Upload',
+    href: '/ipfsUpload',
+    icon: <ArrowUpTrayIcon className="h-4 w-4" />
+  },
+  {
+    label: 'IPFS Download',
+    href: '/ipfsDownload',
+    icon: <ArrowDownTrayIcon className="h-4 w-4" />
+  },
+  {
+    label: 'Debug Contracts',
+    href: '/debug',
+    icon: <BugAntIcon className="h-4 w-4" />
+  }
 ];
 
 export const HeaderMenuLinks = () => {
@@ -86,8 +108,8 @@ export const Header = () => {
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">Scaffold-ETH</span>
-            <span className="text-xs">Ethereum dev stack</span>
+            <span className="font-bold leading-tight">SRE Challenges</span>
+            <span className="text-xs">Tokenization</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap h-full m-0 p-0 list-none">

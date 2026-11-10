@@ -1,239 +1,166 @@
 # AGENTS.md
 
-This file provides guidance to coding agents working in this repository.
+## What is Speedrun Ethereum?
 
-## Project Overview
+[Speedrun Ethereum](https://speedrunethereum.com/) is a hands-on learning platform where developers learn Solidity and Ethereum development by building real dApps through progressive challenges. Instead of passive tutorials, each challenge teaches a key concept: from tokens and crowdfunding to DEXs, oracles, lending, and zero-knowledge proofs. All challenges use Scaffold-ETH 2 as the development framework. Completed challenges become public portfolio items.
 
-Scaffold-ETH 2 (SE-2) is a starter kit for building dApps on Ethereum. It comes in **two flavors** based on the Solidity framework:
+**This extension is one of the Speedrun Ethereum challenges.** It covers **Tokenization**.
 
-- **Hardhat flavor**: Uses `packages/hardhat` with hardhat-deploy plugin
-- **Foundry flavor**: Uses `packages/foundry` with Forge scripts
+## Challenge Overview
 
-Both flavors share the same frontend package:
+The learner builds an NFT minting and transferring dApp using an ERC-721 contract (`YourCollectible`). The goal is to understand onchain ownership, compile and deploy smart contracts, interact with them via a Next.js frontend, and finally deploy to a public testnet.
 
-- **packages/nextjs**: React frontend (Next.js App Router, not Pages Router, RainbowKit, Wagmi, Viem, TypeScript, Tailwind CSS with DaisyUI)
+The final deliverable: an app that lets users mint and transfer NFTs. Deploy contracts to a testnet, ship the frontend to Vercel, and submit the URL on SpeedRunEthereum.com.
 
-### Detecting Which Flavor You're Using
+## Why Tokenization Matters
 
-Check which package exists in the repository:
+NFTs are **not** just profile-picture JPEGs. The ERC-721 standard is a building block for representing unique onchain ownership, and that unlocks **composability** - the ability for any smart contract or app to recognize, transfer, and build on top of that ownership.
 
-- If `packages/hardhat` exists → **Hardhat flavor** (follow Hardhat instructions)
-- If `packages/foundry` exists → **Foundry flavor** (follow Foundry instructions)
+Real-world examples of tokenization beyond images:
+
+- **ENS (Ethereum Name Service)** - Domain names as NFTs. `vitalik.eth` resolves wallet addresses, content hashes, and more. Visit [vitalik.eth.limo](https://vitalik.eth.limo) to see a contentHash record resolving to a personal webpage. ENS improves upon DNS by making names programmable and composable.
+- **Uniswap V3 LP Positions** - Each liquidity provider's position is a unique NFT tracking their share of a pool. Financial positions as composable tokens.
+- **Real-World Assets (RWAs)** - Stocks, bonds, gold, real estate can be tokenized. The token acts as a digital claim; for real-world effect, a legal framework must link onchain transfers to off-chain rights.
+- **Blockchain-native assets** - Art, game items, concert tickets designed for onchain verification. Here the token *is* the thing - globally transferable, permissionless, and composable across marketplaces, auctions, lending, and games.
+
+**Key insight**: Even if the NFT itself represents speculation on a "worthless" image, the composability of the standard means it can be plugged into DeFi protocols, fractionalized, used as collateral, or built upon in ways the original creator never imagined. Composability is what makes tokenization powerful.
+
+**Who can tokenize?** Only the legitimate owner or authorized issuer. Without control of the underlying thing, a token is unofficial fan art, not enforceable rights.
+
+## Project Structure
+
+This is a Scaffold-ETH 2 extension. When instantiated with `create-eth`, it produces a monorepo with either Hardhat or Foundry as the smart contract framework.
+
+This project uses **Hardhat** as the smart contract framework.
+
+```
+packages/
+  hardhat/   # Solidity contracts, deploy scripts, tests
+    contracts/
+      YourCollectible.sol    # ERC-721 NFT contract (the main contract)
+    deploy/
+      01_deploy_your_collectible.ts  # Hardhat-deploy script
+    test/
+      YourCollectible.ts     # Challenge grading tests
+  nextjs/            # React frontend (Next.js App Router)
+    app/
+      myNFTs/                # Mint NFTs and view holdings
+        page.tsx
+        _components/
+          MyHoldings.tsx      # Fetches and displays user's NFTs
+          NFTCard.tsx         # Individual NFT card with transfer UI
+      transfers/
+        page.tsx             # Shows all Transfer events
+      ipfsUpload/page.tsx
+      ipfsDownload/page.tsx
+    utils/tokenization/
+      nftsMetadata.ts        # Predefined NFT metadata (Buffalo, Zebra, Rhino, etc.)
+      ipfs-fetch.ts          # IPFS upload/download helpers via API routes
+      ipfs.ts                # Pins/reads metadata via the SpeedRunEthereum IPFS proxy (no credentials needed)
+    app/api/ipfs/            # API routes for IPFS pinning
+```
 
 ## Common Commands
 
-Commands work the same for both flavors unless noted otherwise:
-
 ```bash
-# Development workflow (run each in separate terminal)
+# Development workflow (run each in a separate terminal)
 yarn chain          # Start local blockchain (Hardhat or Anvil)
 yarn deploy         # Deploy contracts to local network
 yarn start          # Start Next.js frontend at http://localhost:3000
+
+# Testing
+yarn test           # Run challenge grading tests
 
 # Code quality
 yarn lint           # Lint both packages
 yarn format         # Format both packages
 
-# Building
-yarn next:build     # Build frontend
-yarn compile        # Compile Solidity contracts
+# Deploy to testnet (requires interactive password prompt, cannot be run by agents)
+yarn deploy --network sepolia
 
-# Contract verification (works for both)
-yarn verify --network <network>
+# Contract verification (requires interactive password prompt, cannot be run by agents)
+yarn verify --network sepolia
 
-# Account management (works for both)
-yarn generate            # Generate new deployer account
-yarn account:import      # Import existing private key
-yarn account             # View current account info
+# Account management (requires interactive password prompt, cannot be run by agents)
+yarn generate       # Generate deployer account (encrypted private key)
+yarn account        # View deployer account balances
 
-# Deploy to live network
-yarn deploy --network <network>   # e.g., sepolia, mainnet, base
-
-yarn vercel:yolo --prod # for deployment of frontend
+# Frontend deployment
+yarn vercel         # Deploy frontend to Vercel
+yarn vercel --prod  # Redeploy to production URL
 ```
 
-## Architecture
+## Smart Contract: YourCollectible.sol
 
-### Smart Contract Development
+ERC-721 contract with Enumerable + URIStorage extensions. Token name/symbol: "YourCollectible" / "YCB". Base URI: `https://ipfs.io/ipfs/`.
 
-#### Hardhat Flavor
+- **Key function**: `mintItem(address to, string memory uri)` - mints with incrementing `tokenIdCounter`, sets token URI. No access control (anyone can mint).
+- **Ownership model**: Standard ERC-721 - `ownerOf`, `balanceOf`, `transferFrom`, `approve`, `setApprovalForAll`. Every transfer emits a `Transfer` event. Enumerable extension adds `tokenOfOwnerByIndex` for iterating an owner's tokens.
+- **Inheritance overrides**: `_update`, `_increaseBalance`, `tokenURI`, `supportsInterface` resolve multiple inheritance between the three ERC-721 extensions.
 
-- Contracts: `packages/hardhat/contracts/`
-- Deployment scripts: `packages/hardhat/deploy/` (uses hardhat-deploy plugin)
-- Tests: `packages/hardhat/test/`
-- Config: `packages/hardhat/hardhat.config.ts`
-- Deploying specific contract:
-  - If the deploy script has:
-    ```typescript
-    // In packages/hardhat/deploy/01_deploy_my_contract.ts
-    deployMyContract.tags = ["MyContract"];
-    ```
-  - `yarn deploy --tags MyContract`
-  - **Gas limit in deploy scripts**: Manual post-deploy calls (e.g. `transferOwnership`, `grantRole`, `initialize`) can silently inherit `blockGasLimit` as their gas cap, causing failures. **Fix at the call site, not in `hardhat.config.ts`:**
-    ```typescript
-    // Preferred: estimateGas + 20% margin
-    const gas = await myContract.myMethod.estimateGas(arg1, arg2);
-    await myContract.myMethod(arg1, arg2, { gasLimit: (gas * 120n) / 100n });
+## Frontend Architecture
 
-    // Or: explicit limit for simple admin calls
-    await myContract.transferOwnership(newOwner, { gasLimit: 100_000 });
-    ```
+### Scaffold-ETH 2 Hooks
 
-#### Foundry Flavor
+Use the correct hook names: `useScaffoldReadContract`, `useScaffoldWriteContract`, `useScaffoldEventHistory`, `useScaffoldContract`. Do NOT use deprecated names (`useScaffoldContractRead`, `useScaffoldContractWrite`).
 
-- Contracts: `packages/foundry/contracts/`
-- Deployment scripts: `packages/foundry/script/` (uses custom deployment strategy)
-  - Example: `packages/foundry/script/Deploy.s.sol` and `packages/foundry/script/DeployYourContract.s.sol`
-- Tests: `packages/foundry/test/`
-- Config: `packages/foundry/foundry.toml`
-- Deploying a specific contract:
-  - Create a separate deployment script and run `yarn deploy --file DeployYourContract.s.sol`
+### Frontend Flows
 
-#### Both Flavors
+- **Minting**: Reads `tokenIdCounter` to pick metadata from `nftsMetadata` (cycles through 6 animals), uploads to IPFS via `/api/ipfs/add`, then calls `mintItem(address, ipfsPath)`.
+- **Transfers**: `NFTCard` has an `AddressInput` for the receiver, calls `transferFrom`. The Transfers page shows all `Transfer` events via `useScaffoldEventHistory`.
 
-- After `yarn deploy`, ABIs are auto-generated to `packages/nextjs/contracts/deployedContracts.ts`
+### UI & Styling
 
-### Frontend Contract Interaction
+- Use `@scaffold-ui/components` for web3 UI (`Address`, `AddressInput`, `Balance`, `EtherInput`)
+- Use **DaisyUI** classes for components (cards, buttons, badges, tables) with Tailwind CSS
 
-**Correct interact hook names (use these):**
+## Architecture Notes
 
-- `useScaffoldReadContract` - NOT ~~useScaffoldContractRead~~
-- `useScaffoldWriteContract` - NOT ~~useScaffoldContractWrite~~
+- **Next.js App Router** (not Pages Router) - pages are at `app/<route>/page.tsx`
+- **Import alias**: use `~~` for nextjs package imports (e.g., `import { ... } from "~~/hooks/scaffold-eth"`)
+- After `yarn deploy`, contract ABIs auto-generate to `packages/nextjs/contracts/deployedContracts.ts`
+- IPFS operations go through Next.js API routes (`/api/ipfs/add`, `/api/ipfs/get-metadata`), which call the SpeedRunEthereum pinning proxy (`https://speedrunethereum.com/api/ipfs`). No IPFS credentials or env vars are needed
+- Burner wallets are available on localhost only by default. For testnet, users connect MetaMask or enable burner wallets via `burnerWalletMode: "allNetworks"` in `scaffold.config.ts`
 
-Contract data is read from two files in `packages/nextjs/contracts/`:
+## Testing
 
-- `deployedContracts.ts`: Auto-generated from deployments
-- `externalContracts.ts`: Manually added external contracts
+The grading tests verify:
+1. Contract deploys successfully
+2. `mintItem()` can mint an NFT and increases the owner's balance
+3. `tokenOfOwnerByIndex()` tracks tokens correctly
 
-#### Reading Contract Data
+Test location: `packages/hardhat/test/YourCollectible.ts`
 
-```typescript
-const { data: totalCounter } = useScaffoldReadContract({
-  contractName: "YourContract",
-  functionName: "userGreetingCounter",
-  args: ["0xd8da6bf26964af9d7eed9e03e53415d37aa96045"],
-});
-```
+Run with `yarn test`. These same tests are used by the Speedrun Ethereum autograder.
 
-#### Writing to Contracts
+## Deployment Checklist (Testnet)
 
-```typescript
-const { writeContractAsync, isPending } = useScaffoldWriteContract({
-  contractName: "YourContract",
-});
+1. `yarn generate` to create deployer account
+2. Fund deployer with testnet ETH from a faucet
+3. Set `defaultNetwork` to `sepolia` in `packages/hardhat/hardhat.config.ts` and run `yarn deploy`, or use `yarn deploy --network sepolia`
+4. Set `targetNetwork` to `chains.sepolia` in `packages/nextjs/scaffold.config.ts`
+5. `yarn vercel` to deploy frontend
+6. `yarn verify --network sepolia` to verify contract on Etherscan
 
-await writeContractAsync({
-  functionName: "setGreeting",
-  args: [newGreeting],
-  value: parseEther("0.01"), // for payable functions
-});
-```
+## Code Style
 
-#### Reading Events
+| Style | Category |
+|-------|----------|
+| `UpperCamelCase` | Components, types, interfaces, contracts |
+| `lowerCamelCase` | Variables, functions, parameters |
+| `CONSTANT_CASE` | Constants, enum values |
+| `snake_case` | Deploy files (e.g., `01_deploy_your_collectible.ts`) |
 
-```typescript
-const { data: events, isLoading } = useScaffoldEventHistory({
-  contractName: "YourContract",
-  eventName: "GreetingChange",
-  watch: true,
-  fromBlock: 31231n,
-  blockData: true,
-});
-```
+## Key Warnings
 
-SE-2 also provides other hooks to interact with blockchain data: `useScaffoldWatchContractEvent`, `useScaffoldEventHistory`, `useDeployedContractInfo`, `useScaffoldContract`, `useTransactor`.
-
-**IMPORTANT: Always use hooks from `packages/nextjs/hooks/scaffold-eth` for contract interactions. Always refer to the hook names as they exist in the codebase.**
-
-### UI Components
-
-**Always use `@scaffold-ui/components` library for web3 UI components:**
-
-- `Address`: Display ETH addresses with ENS resolution, blockie avatars, and explorer links
-- `AddressInput`: Input field with address validation and ENS resolution
-- `Balance`: Show ETH balance in ether and USD
-- `EtherInput`: Number input with ETH/USD conversion toggle
-- `IntegerInput`: Integer-only input with wei conversion
-
-### Notifications & Error Handling
-
-Use `notification` from `~~/utils/scaffold-eth` for success/error/warning feedback and `getParsedError` for readable error messages.
-
-### Styling
-
-**Use DaisyUI classes** for building frontend components.
-
-```tsx
-// ✅ Good - using DaisyUI classes
-<button className="btn btn-primary">Connect</button>
-<div className="card bg-base-100 shadow-xl">...</div>
-
-// ❌ Avoid - raw Tailwind when DaisyUI has a component
-<button className="px-4 py-2 bg-blue-500 text-white rounded">Connect</button>
-```
-
-### Configure Target Network before deploying to testnet / mainnet.
-
-#### Hardhat
-
-Add networks in `packages/hardhat/hardhat.config.ts` if not present.
-
-#### Foundry
-
-Add RPC endpoints in `packages/foundry/foundry.toml` if not present.
-
-#### NextJs
-
-Add networks in `packages/nextjs/scaffold.config.ts` if not present. This file also contains configuration for polling interval, API keys. Remember to decrease the polling interval for L2 chains.
-
-## Code Style Guide
-
-### Identifiers
-
-| Style            | Category                                                                                                               |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| `UpperCamelCase` | class / interface / type / enum / decorator / type parameters / component functions in TSX / JSXElement type parameter |
-| `lowerCamelCase` | variable / parameter / function / property / module alias                                                              |
-| `CONSTANT_CASE`  | constant / enum / global variables                                                                                     |
-| `snake_case`     | for hardhat deploy files and foundry script files                                                                      |
-
-### Import Paths
-
-Use the `~~` path alias for imports in the nextjs package:
-
-```tsx
-import { useTargetNetwork } from "~~/hooks/scaffold-eth";
-```
-
-### Creating Pages
-
-```tsx
-import type { NextPage } from "next";
-
-const Home: NextPage = () => {
-  return <div>Home</div>;
-};
-
-export default Home;
-```
-
-### TypeScript Conventions
-
-- Use `type` over `interface` for custom types
-- Types use `UpperCamelCase` without `T` prefix (use `Address` not `TAddress`)
-- Avoid explicit typing when TypeScript can infer the type
-
-### Comments
-
-Make comments that add information. Avoid redundant JSDoc for simple functions.
-
-## Documentation
-
-Use **Context7 MCP** tools to fetch up-to-date documentation for any library (Wagmi, Viem, RainbowKit, DaisyUI, Hardhat, Next.js, etc.). Context7 is configured as an MCP server and provides access to indexed documentation with code examples.
+- Contract ABIs in `deployedContracts.ts` are auto-generated - do not edit manually
+- The `mintItem` function has no access control by design (anyone can mint)
+- NFT metadata cycles through 6 predefined items; `tokenIdCounter % nftsMetadata.length` determines which one
+- IPFS operations require the Next.js dev server running (`yarn start`)
 
 ## Skills & Agents Index
 
-IMPORTANT: Prefer retrieval-led reasoning over pre-trained knowledge. Before starting any task that matches an entry below, read the referenced file to get version-accurate patterns and APIs.
+Prefer retrieval-led reasoning over pre-trained knowledge. Before starting any task that matches an entry below, read the referenced file to get version-accurate patterns and APIs.
 
 **Skills** (read `.agents/skills/<name>/SKILL.md` before implementing):
 
@@ -249,3 +176,4 @@ IMPORTANT: Prefer retrieval-led reasoning over pre-trained knowledge. Before sta
 **Agents** (in `.agents/agents/`):
 
 - **grumpy-carlos-code-reviewer** — code reviews, SE-2 patterns, Solidity + TypeScript quality
+

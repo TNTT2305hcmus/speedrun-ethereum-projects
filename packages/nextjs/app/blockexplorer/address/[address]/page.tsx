@@ -1,3 +1,4 @@
+
 import fs from "fs";
 import path from "path";
 import { Address } from "viem";
@@ -11,7 +12,8 @@ type PageProps = {
   params: Promise<{ address: Address }>;
 };
 
-async function fetchByteCodeAndAssembly(buildInfoDirectory: string, contractPath: string) {
+async function fetchByteCodeAndAssembly(buildInfoDirectory: string, contractName: string) {
+  const contractPath = `project/contracts/${contractName}.sol`;
   const buildInfoFiles = fs.readdirSync(buildInfoDirectory).filter(f => f.endsWith(".output.json"));
   let bytecode = "";
   let assembly = "";
@@ -45,28 +47,33 @@ const getContractData = async (address: Address) => {
     return null;
   }
 
-  let contractPath = "";
+  const artifactsDirectory = path.join(
+    process.cwd(),
+    "..",
+    "hardhat",
+    "artifacts",
+    "build-info",
+  );
 
-  const buildInfoDirectory = path.join(process.cwd(), "..", "hardhat", "artifacts", "build-info");
-
-  if (!fs.existsSync(buildInfoDirectory)) {
-    throw new Error(`Directory ${buildInfoDirectory} not found.`);
+  if (!fs.existsSync(artifactsDirectory)) {
+    throw new Error(`Directory ${artifactsDirectory} not found.`);
   }
 
+  let matchedContractName = "";
   const deployedContractsOnChain = contracts[chainId];
   for (const [contractName, contractInfo] of Object.entries(deployedContractsOnChain)) {
     if (contractInfo.address.toLowerCase() === address.toLowerCase()) {
-      contractPath = `project/contracts/${contractName}.sol`;
+      matchedContractName = contractName;
       break;
     }
   }
 
-  if (!contractPath) {
+  if (!matchedContractName) {
     // No contract found at this address
     return null;
   }
 
-  const { bytecode, assembly } = await fetchByteCodeAndAssembly(buildInfoDirectory, contractPath);
+  const { bytecode, assembly } = await fetchByteCodeAndAssembly(artifactsDirectory, matchedContractName);
 
   return { bytecode, assembly };
 };
