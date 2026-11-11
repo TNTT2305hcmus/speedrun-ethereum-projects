@@ -31,8 +31,8 @@ export default deployScript(
 
     // // CHECKPOINT 2: Replace with your front-end address to get 10 balloons on deploy.
     // // Default is the Hardhat test account #1 — works out-of-the-box on local.
-    // const frontendAddress = "YOUR_FRONTEND_ADDRESS";
-    // await execute(balloons, { functionName: "transfer", args: [frontendAddress, parseEther("10")], account: deployer });
+    const frontendAddress = "0x12029881742772872f4d0BB34d949E47561BBF0a";
+    await execute(balloons, { functionName: "transfer", args: [frontendAddress, parseEther("10")], account: deployer });
 
     // // CHECKPOINT 3: Uncomment to init DEX on deploy:
     // console.log("Approving DEX (" + dex.address + ") to take Balloons from main account...");
