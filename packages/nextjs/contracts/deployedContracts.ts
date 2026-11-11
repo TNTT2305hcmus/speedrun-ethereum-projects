@@ -4,6 +4,441 @@
  */
 import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 
-const deployedContracts = {} as const;
+const deployedContracts = {
+  31337: {
+    FundingRecipient: {
+      address: "0x2a264f26859166c5bf3868a54593ee716aebc848",
+      abi: [
+        {
+          type: "function",
+          name: "complete",
+          inputs: [],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "completed",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 33,
+    },
+    CrowdFund: {
+      address: "0xd04ff4a75edd737a73e92b2f2274cb887d96e110",
+      abi: [
+        {
+          type: "constructor",
+          inputs: [
+            {
+              name: "fundingRecipientAddress",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "receive",
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "balances",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "contribute",
+          inputs: [],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "deadline",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "execute",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "fundingRecipient",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract FundingRecipient",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "openToWithdraw",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "threshold",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "timeLeft",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "withdraw",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "event",
+          name: "Contribution",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+            {
+              name: "",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "error",
+          name: "AlreadyCompleted",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "NotOpenToWithdraw",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "TooEarly",
+          inputs: [
+            {
+              name: "deadline",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "currentTimestamp",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "WithdrawTransferFailed",
+          inputs: [
+            {
+              name: "to",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "amount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 34,
+    },
+  },
+  11155111: {
+    FundingRecipient: {
+      address: "0x0543e305908c63ead93969bbe98f9eb63afb109f",
+      abi: [
+        {
+          type: "function",
+          name: "complete",
+          inputs: [],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "completed",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 12108535,
+    },
+    CrowdFund: {
+      address: "0xfc3ca06847614672df086a660294e0c98508bc78",
+      abi: [
+        {
+          type: "constructor",
+          inputs: [
+            {
+              name: "fundingRecipientAddress",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "receive",
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "balances",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "address",
+            },
+          ],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "contribute",
+          inputs: [],
+          outputs: [],
+          stateMutability: "payable",
+        },
+        {
+          type: "function",
+          name: "deadline",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "execute",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "function",
+          name: "fundingRecipient",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "address",
+              internalType: "contract FundingRecipient",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "openToWithdraw",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "bool",
+              internalType: "bool",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "threshold",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "timeLeft",
+          inputs: [],
+          outputs: [
+            {
+              name: "",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+          stateMutability: "view",
+        },
+        {
+          type: "function",
+          name: "withdraw",
+          inputs: [],
+          outputs: [],
+          stateMutability: "nonpayable",
+        },
+        {
+          type: "event",
+          name: "Contribution",
+          inputs: [
+            {
+              name: "",
+              type: "address",
+              indexed: false,
+              internalType: "address",
+            },
+            {
+              name: "",
+              type: "uint256",
+              indexed: false,
+              internalType: "uint256",
+            },
+          ],
+          anonymous: false,
+        },
+        {
+          type: "error",
+          name: "AlreadyCompleted",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "NotOpenToWithdraw",
+          inputs: [],
+        },
+        {
+          type: "error",
+          name: "TooEarly",
+          inputs: [
+            {
+              name: "deadline",
+              type: "uint256",
+              internalType: "uint256",
+            },
+            {
+              name: "currentTimestamp",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+        {
+          type: "error",
+          name: "WithdrawTransferFailed",
+          inputs: [
+            {
+              name: "to",
+              type: "address",
+              internalType: "address",
+            },
+            {
+              name: "amount",
+              type: "uint256",
+              internalType: "uint256",
+            },
+          ],
+        },
+      ],
+      inheritedFunctions: {},
+      deployedOnBlock: 12108535,
+    },
+  },
+} as const;
 
 export default deployedContracts satisfies GenericContractsDeclaration;
